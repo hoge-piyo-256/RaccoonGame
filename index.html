@@ -1,0 +1,568 @@
+<html><head>    <meta name="viewport" content="width=device-width">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&amp;display=swap" rel="stylesheet">
+        <style>
+            html {
+                -ms-touch-action:manipulation;
+                touch-action:manipulation;
+            }
+
+            body {
+                background: white;
+                color: black;
+                margin: 0;
+                font-family: 'Hachi Maru Pop', cursive;
+	            user-select: none;
+            }
+
+            a:visited {
+                color: white;
+            }
+
+            .root-container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .fox-ui {
+                background: linear-gradient(90deg, #aaaa00, #ffff00);
+                height: 100px;
+                display: flex;
+            }
+            
+            .space {
+                background: green;
+                height: calc(100vh - 200px);
+            }
+            
+            .raccoon-ui {
+                background: linear-gradient(270deg, #aaaa00, #ffff00);
+                height: 100px;
+                display: flex;
+            }
+            
+            .char-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .center {
+                transform: translate(-50%, -50%);
+                top: 50%;
+                left: 50%;
+                position: relative;
+            }
+            
+            .text-ui {
+                margin: 10px;
+            }
+            
+            .dialog {
+                width: 95vw;
+                height: 95vh;
+                background: green;
+                border: 2px solid white;
+                border-radius: 10px;
+                color: white;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .root-dialog {
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                position: fixed;
+                background: #00000066;
+                visibility: hidden;
+            }
+
+            .dialog-title {
+                font-size: 30px;
+                text-align: center;
+            }
+
+            .dialog-result-container {
+                width: 100%;
+                display: flex;
+            }
+
+            .dialog-result-raccoon {
+                width: 20%;
+                text-align: center;
+            }
+
+            .dialog-result-fox {
+                width: 20%;
+                text-align: center;
+            }
+
+            .dialog-result-raccoon-title {
+                font-size: 20px;
+            }
+
+            .dialog-result-fox-title {
+                font-size: 20px;
+            }
+
+            .dialog-result-title {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .dialog-result-ui {
+                width: 60%;
+                text-align: center;
+            }
+
+            .dialog-result-item {
+                font-size: 20px;
+            }
+
+            .dialog-result-point {
+                font-size: 30px;
+            }
+
+            .dialog-result-winner {
+                text-align: center;
+                font-size: 35px;
+            }
+
+            span#winner {
+                font-size: 50px;
+            }
+
+            .dialog-retry-button {
+                width: max-content;
+                height: max-content;
+                margin: auto auto 20px auto;
+                padding: 10px;
+                font-size: 30px;
+                background: #c70000;
+                border: 2px white solid;
+                border-radius: 100px;
+                cursor: pointer;
+            }
+
+            .signal-root {
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                position: fixed;
+                background: #00000066;
+            }
+
+            .signal-text {
+                width: max-content;
+                border: 2px solid rgb(250,140,0);
+                padding: 20px;
+                background: rgb(140,30,0);
+                font-size: 30px;
+                border-radius: 100px;
+                color: white;
+            }
+
+            .tweet-container {
+                margin: 20px;
+            }
+
+            .tweet {
+                background: #00acee;
+                width: max-content;
+                height: max-content;
+                padding: 10px;
+                margin: auto;
+                border-radius: 100px;
+                color: white;
+                text-decoration: none;
+                display: block;
+            }
+
+            .tweet-thanks {
+                width: max-content;
+                height: max-content;
+                margin: auto;
+            }
+
+            .start-dialog {
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                position: fixed;
+                text-align: center;
+                background: linear-gradient(135deg, #00ffffaa, #ff00ffaa);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .start-dialog-text-container {
+                height: 100%;
+            }
+
+            .start-dialog-detail {
+                width: 100vw;
+                height: max-content;
+                padding: 20px 0;
+                bottom: 0;
+                background: #00000066;
+            }
+
+            .center.start-dialog-text {
+                font-size: 35px;
+            }
+
+            .ui-container {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                padding: 0;
+            }
+
+            .text {
+                height: 50%;
+            }
+
+            .start-dialog-guide {
+                font-size: 15px;
+                margin: 30px 0;
+            }
+
+            span.start-dialog-guide-title {
+                font-size: 20px;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="root-container">
+        <div class="fox-ui" id="foxUI">
+    <div class="char-icon fox-icon"></div>
+    <div class="ui-container">
+        <div class="text">
+        <div class="center">
+            きつね
+        </div>
+        </div>
+        <div class="text">
+        <div class="center">
+            木の実の数:<span id="foxGameNut">0</span>
+        </div>
+        </div></div>
+</div>
+</div>
+        <div class="space" id="space"></div></div>
+        <div class="raccoon-ui">
+    <div class="char-icon raccoon-icon"></div>
+    <div class="ui-container">
+        <div class="text">
+        <div class="center">
+            たぬき(あなた)
+        </div>
+        </div>
+        <div class="text">
+        <div class="center">
+            木の実の数:<span id="raccoonGameNut">0</span>
+        </div>
+        </div></div>
+</div>
+    </div><div class="root-dialog" id="resultDialog" style="visibility: hidden;"><div class="center dialog">
+        <div class="dialog-title">結果発表</div><div class="dialog-result-container">
+        <div class="dialog-result-raccoon">
+        <div class="dialog-result-title">たぬき</div>
+    <div class="dialog-result-item" id="raccoonNut"></div><div class="dialog-result-item" id="raccoonGold"></div><div class="dialog-result-item" id="raccoonBomb"></div><div class="dialog-result-point" id="raccoonPoint"></div></div>
+        <div class="dialog-result-ui">
+        <div class="dialog-result-title">&nbsp;</div>
+    <div class="dialog-result-item">木の実</div><div class="dialog-result-item">黄金の木の実</div><div class="dialog-result-item">爆弾</div><div class="dialog-result-point">総合結果</div></div><div class="dialog-result-fox"><div class="dialog-result-title">きつね</div><div class="dialog-result-item" id="foxNut"></div><div class="dialog-result-item" id="foxGold"></div><div class="dialog-result-item" id="foxBomb"></div><div class="dialog-result-point" id="foxPoint"></div></div>
+    </div>
+    <div class="dialog-result-winner" id="winner">
+        勝敗は...
+    </div>
+    <div class="tweet-container">
+        <!-- ツイート -->
+        <a target="_blank" id="tweetButton" class="tweet" style="visibility: hidden;">ツイートする</a>
+        <div id="tweetThanks" class="tweet-thanks"></div>
+    </div>
+    <div class="dialog-retry-button" id="retryButton">もういっかい</div>
+    </div></div>
+    <div id="signal" style="
+        visibility: hidden;
+    " class="signal-root">
+        <div id="signalText" class="center signal-text">Error?</div>
+    </div>
+    <div class="start-dialog" id="startDialog">
+        <div class="start-dialog-text-container"><div class="center start-dialog-text">タップしてスタート
+            <div class="start-dialog-guide">
+                <span class="start-dialog-guide-title">～ かんたんな遊び方 ～</span><br><br>
+                画面上に木の実が出てくるから拾うだけ!!<br>
+                きつねとポイントを競うよ。<br>
+                ふつうの木の実は 1Point、<br>
+                金の木の実はなんと 5Points!!<br>
+                爆弾を拾うと 3Points へるよ。<br>
+                かんたんすぎて誰にでもできるね!!<br>
+                画面をタップして Let's try!!
+            </div>
+            </div></div>
+<div class="start-dialog-detail">2023年制作<br>♡ そつおめ記念 ♡</div>
+    </div>
+    <script>
+        var num;
+        document.getElementById('startDialog').onclick = () => {
+            document.getElementById('startDialog').style.visibility = 'hidden';
+            init();
+        };
+
+        var game = {
+            raccoon: {
+                nut: 0,
+                gold: 0,
+                bomb: 0,
+            },
+            fox: {
+                nut: 0,
+                gold: 0,
+                bomb: 0,
+                interval: null,
+                config: {
+                    period: 725,     // きつねが行動する周期(ミリ秒)
+                    probability: 0.8 // きつねの行動時に木の実をとる確率
+                }
+            },
+            setting: {
+                fade: {
+                    period: 50,      // フェードイン・アウトの透明度の更新間隔
+                    increment: 0.1   // フェードイン・アウトの透明度の更新時の変化量
+                },
+                effect: {
+                    raccoon: '#ff6300',
+                    fox: '#ffd900',
+                    opacity: 0.75
+                }
+            }
+        };
+
+        var nameLib = {
+            add: (elem,text) => {
+                var isDefined = (arg) => {
+                    return typeof arg != 'undefined';
+                };
+                if(isDefined(elem.getAttribute) && isDefined(elem.setAttribute)) {
+                    var exist = false;
+                    elem.getAttribute('name').split(' ').forEach((a) => {
+                        exist += exist || a == text;
+                    });
+                    if(!exist) {
+                        elem.setAttribute('name',`${elem.getAttribute('name') ?? ''} ${text}`);
+                    }
+                }
+            },
+            remove: (elem,text) => {
+                var isDefined = (arg) => {
+                    return typeof arg != 'undefined';
+                };
+                if(isDefined(elem.getAttribute) && isDefined(elem.setAttribute)) {
+                    var nameAttribute = '';
+                    elem.getAttribute('name').split(' ').forEach((a) => {
+                        nameAttribute += a != text ? ` ${a}` : '';
+                    });
+                    elem.setAttribute('name',nameAttribute);
+                }
+            },
+            reset: (elem) => {
+                var isDefined = (arg) => {
+                    return typeof arg != 'undefined';
+                };
+                if(isDefined(elem.getAttribute) && isDefined(elem.setAttribute)) {
+                    elem.setAttribute('name','');
+                }
+            },
+            isExist: (elem,text) => {
+                var isDefined = (arg) => {
+                    return typeof arg != 'undefined';
+                };
+                if(isDefined(elem.getAttribute) && isDefined(elem.setAttribute)) {
+                    var exist = false;
+                    elem.getAttribute('name').split(' ').forEach((a) => {
+                        exist += exist || a == text;
+                    });
+                }
+                return Boolean(exist)
+            }
+        };
+
+        function init() {
+            document.getElementById('signalText').innerText = 'スタート!!';
+            document.getElementById('signal').style.visibility = 'visible';
+            setTimeout(() => {
+                document.getElementById('signal').style.visibility = 'hidden';
+
+                num = 0;
+                var gameLoop;
+
+                // ランダムな整数を返す関数の定義
+                var random = (min, max) => {
+                    return Math.floor(Math.random() * 100000) % (max - min + 1) + min;
+                };
+
+                // 第一引数の確率で TRUE を返す関数の定義
+                var coinntoss = (probability) => {
+                    if(probability == 0) {
+                        return false;
+                    } else {
+                        return (probability * 10000 > random(0,10000));
+                    }
+                };
+
+                // 木の実が取られた場所にエフェクトを表示する関数の定義
+                var setTakenEffect = (nutObj,color) => {
+                    var effectObj = document.createElement("div");
+                    effectObj.setAttribute("name","takenEffect");
+                    effectObj.setAttribute("style",`
+                            width: 50px;
+                            height: 50px;
+                            position: absolute;
+                            background: ${color};
+                            border-radius: 100px;
+                            border: white solid 2px;
+                            top: ${nutObj.style.top};
+                            left: ${nutObj.style.left};
+                            opacity: ${game.setting.effect.opacity};
+                            pointer-events: none;
+                    `);
+                    document.getElementById('space').appendChild(effectObj)
+                };
+
+                // きつね、始動!!
+                game.fox.interval = setInterval(() => {
+                    if(coinntoss(game.fox.config.probability)) {
+                        var allNuts = document.getElementsByName('item');
+                        var index = random(0,allNuts.length - 1);
+                        setTakenEffect(allNuts[index],game.setting.effect.fox);
+                        allNuts[index].remove();
+                        game.fox.nut++;
+                        document.getElementById('foxGameNut').innerText = game.fox.nut;
+                    }
+                }, game.fox.config.period)
+
+                // 木の実の設定
+                var nut = {
+                    /*画像の縦幅*/ width: 55,
+                    /*画像の横幅*/ height: 55
+                };
+                gameloop = setInterval(() => {
+                    var nutObj = document.createElement("div");
+                    nutObj.setAttribute("id",num);
+                    nutObj.setAttribute("name","item");
+                    nutObj.setAttribute("style",`
+                            width: 50px;
+                            height: 50px;
+                            position: absolute;
+                            background: brown;
+                            border-radius: 100px;
+                            border: white solid 2px;
+                            top: ${random(0,document.getElementById('space').offsetHeight - nut.height) + document.getElementById('foxUI').offsetHeight}px;
+                            left: ${random(0,document.getElementById('space').offsetWidth - nut.width)}px;
+                            cursor: pointer;
+                            opacity: 0;
+                    `);
+                    nutObj.onclick = (e) => {
+                        setTakenEffect(e.currentTarget,game.setting.effect.raccoon);
+                        e.currentTarget.remove();
+                        game.raccoon.nut++;
+                        document.getElementById('raccoonGameNut').innerText = game.raccoon.nut;
+                    };
+                    document.getElementById('space').appendChild(nutObj);
+                    num++;
+                }, 400);
+
+                var fadeinController = setInterval(() => {
+                    var items = document.getElementsByName('item');
+                    if(items.length != 0) {
+                        [...items].forEach((a) => {
+                            if(Number(a.style.opacity) < 1 && Number(a.style.opacity) <= 1 - game.setting.fade.increment) {
+                                a.style.opacity = Number(a.style.opacity) + game.setting.fade.increment;
+                            } else if(Number(a.style.opacity) < 1) {
+                                a.style.opacity = 1;
+                            }
+                        });
+                    }
+                }, game.setting.fade.period);
+
+                var fadeoutController = setInterval(() => {
+                    var items = document.getElementsByName('takenEffect');
+                    if(items.length != 0) {
+                        [...items].forEach((a) => {
+                            if(Number(a.style.opacity) > 0 && Number(a.style.opacity) >= game.setting.fade.increment) {
+                                a.style.opacity = Number(a.style.opacity) - game.setting.fade.increment;
+                            } else if(Number(a.style.opacity) > 0) {
+                                a.remove();
+                            }
+                        });
+                    }
+                }, game.setting.fade.period);
+
+                document.getElementById('retryButton').onclick = () => {
+                    location.reload();
+                };
+
+                setTimeout(() => {
+                    clearInterval(game.fox.interval);
+                    clearInterval(gameloop);
+                    clearInterval(fadeinController);
+                    clearInterval(fadeoutController);
+                    document.getElementById('signalText').innerText = '終了!!';
+                    document.getElementById('signal').style.visibility = 'visible';
+                    setTimeout(() => {
+                        document.getElementById('signal').style.visibility = 'hidden';
+                        showResult();
+                    }, 1000);
+                },3 * 1000);
+            }, 1000);
+        }
+
+        function showResult() {
+            var doDelay = (funcArgs, delay, firstDelay = 0) => {
+                funcArgs.forEach((func,index) => {
+                    setTimeout(func, index * delay + firstDelay);
+                })
+            };
+
+            document.getElementById('resultDialog').style.visibility = 'visible';
+            doDelay([
+                () => {
+                    document.getElementById('raccoonNut').innerText = game.raccoon.nut;
+                    document.getElementById('foxNut').innerText = game.fox.nut;
+                },
+                () => {
+                    document.getElementById('raccoonGold').innerText = game.raccoon.gold;
+                    document.getElementById('foxGold').innerText = game.fox.gold;
+                },
+                () => {
+                    document.getElementById('raccoonBomb').innerText = game.raccoon.bomb;
+                    document.getElementById('foxBomb').innerText = game.fox.bomb;
+                },
+                () => {
+                    document.getElementById('raccoonPoint').innerText = game.raccoon.nut + game.raccoon.gold * 5 - game.raccoon.bomb * 3;
+                    document.getElementById('foxPoint').innerText = game.fox.nut + game.fox.gold * 5 - game.fox.bomb * 3;
+                },
+                () => {
+                    var fox     = game.fox.nut + game.fox.gold * 5 - game.fox.bomb * 3;
+                    var raccoon = game.raccoon.nut + game.raccoon.gold * 5 - game.raccoon.bomb * 3;
+                    document.getElementById('winner').innerText = (raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "たぬきの勝ち" : "きつねの勝ち";
+                    
+                    // ツイートボタン
+                    document.getElementById('tweetButton').href = `http://twitter.com/share?url=${location.href}&text=${document.getElementById('raccoonPoint').innerText} 対 ${document.getElementById('foxPoint').innerText} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
+                    document.getElementById('tweetButton').onclick = () => {
+                        document.getElementById('tweetThanks').innerText = 'ツイートありがとうございます!!';
+                    };
+                    document.getElementById('tweetButton').style.visibility = 'visible';
+                }
+            ], 750, 1000);
+        }
+        // よくよく考えたらプレイヤーがたぬきって失礼だな
+    </script>
+</body></html>
