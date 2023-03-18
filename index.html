@@ -263,7 +263,7 @@
                 </div>
                 <div class="text">
                     <div class="center">
-                        木の実の数:<span id="foxGameNut">0</span>
+                        ポイント:<span id="foxGameNut">0</span>
                     </div>
                 </div>
             </div>
@@ -281,7 +281,7 @@
             </div>
             <div class="text">
                 <div class="center">
-                    木の実の数:<span id="raccoonGameNut">0</span>
+                    ポイント:<span id="raccoonGameNut">0</span>
                 </div>
             </div>
         </div>
@@ -326,8 +326,8 @@
         </div>
     </div>
     <div id="signal" style="
-        visibility: hidden;
-    " class="signal-root">
+            visibility: hidden;
+        " class="signal-root">
         <div id="signalText" class="center signal-text">Error?</div>
     </div>
     <div class="start-dialog" id="startDialog">
@@ -337,6 +337,7 @@
                     <span class="start-dialog-guide-title">～ かんたんな遊び方 ～</span><br><br>
                     画面上に木の実が出てくるから拾うだけ!!<br>
                     きつねとポイントを競うよ。<br>
+                    制限時間は 30秒!!<br>
                     ふつうの木の実は 1Point、<br>
                     金の木の実はなんと 5Points!!<br>
                     爆弾を拾うと 3Points へるよ。<br>
@@ -358,7 +359,7 @@
             raccoon: {
                 nut: 0,
                 gold: 0,
-                bomb: 0,
+                bomb: 0
             },
             fox: {
                 nut: 0,
@@ -366,12 +367,33 @@
                 bomb: 0,
                 interval: null,
                 config: {
-                    period: 725,     // きつねが行動する周期(ミリ秒)
-                    probability: 0.8 // きつねの行動時に木の実をとる確率
+                    period: 775,      // きつねが行動する周期(ミリ秒)
+                    probability: 0.8, // きつねの行動時に木の実をとる確率
+                    takeOther: true,  // きつねが行動時に金、または爆弾を取ろうとしたが存在しなかったときに普通の木の実をとるか
+                    takeProbability: {
+                        normal: 0.25,  // きつねが行動時に普通の木の実を取る確率
+                        gold: 0.65,    // きつねが行動時に普通の金の実を取る確率
+                        bomb: 0.1     // きつねが行動時に普通の爆弾を取る確率
+                    }
                 }
+            },
+            state: {
+                hidePoint: false
             },
             setting: {
                 time: 30 * 1000,     // ゲーム時間
+                item: {
+                    point: {
+                        normal: 1,
+                        gold: 5,
+                        bomb: -3
+                    },
+                    probability: {
+                        normal: 0.75,
+                        gold: 0.1,
+                        bomb: 0.15
+                    }
+                },
                 fade: {
                     period: 50,      // フェードイン・アウトの透明度の更新間隔
                     increment: 0.1   // フェードイン・アウトの透明度の更新時の変化量
@@ -461,17 +483,17 @@
                     var effectObj = document.createElement("div");
                     effectObj.setAttribute("name", "takenEffect");
                     effectObj.setAttribute("style", `
-                            width: 50px;
-                            height: 50px;
-                            position: absolute;
-                            background: ${color};
-                            border-radius: 100px;
-                            border: white solid 2px;
-                            top: ${nutObj.style.top};
-                            left: ${nutObj.style.left};
-                            opacity: ${game.setting.effect.opacity};
-                            pointer-events: none;
-                    `);
+                                width: 50px;
+                                height: 50px;
+                                position: absolute;
+                                background: ${color};
+                                border-radius: 100px;
+                                border: white solid 2px;
+                                top: ${nutObj.style.top};
+                                left: ${nutObj.style.left};
+                                opacity: ${game.setting.effect.opacity};
+                                pointer-events: none;
+                        `);
                     document.getElementById('space').appendChild(effectObj)
                 };
 
@@ -479,40 +501,102 @@
                 game.fox.interval = setInterval(() => {
                     if (coinntoss(game.fox.config.probability)) {
                         var allNuts = document.getElementsByName('item');
-                        var index = random(0, allNuts.length - 1);
-                        setTakenEffect(allNuts[index], game.setting.effect.fox);
-                        allNuts[index].remove();
-                        game.fox.nut++;
-                        document.getElementById('foxGameNut').innerText = game.fox.nut;
+                        var normal = [];
+                        var gold = [];
+                        var bomb = [];
+                        allNuts.forEach((itemElem) => {
+                            if(itemElem.dataset.type == 'normal') normal[normal.length] = itemElem;
+                            if(itemElem.dataset.type == 'gold')   gold[gold.length]     = itemElem;
+                            if(itemElem.dataset.type == 'bomb')   bomb[bomb.length]     = itemElem;
+                        });
+                        var takeNormal = () => {
+                            var index = random(0, normal.length - 1);
+                            setTakenEffect(normal[index], game.setting.effect.fox);
+                            game.fox.nut  += normal[index].dataset.type == 'normal';
+                            normal[index].remove();
+                        };
+                        var takeGold = () => {
+                            var index = random(0, gold.length - 1);
+                            setTakenEffect(gold[index], game.setting.effect.fox);
+                            game.fox.gold += gold[index].dataset.type == 'gold';
+                            gold[index].remove();
+                        };
+                        var takeBomb = () => {
+                            var index = random(0, bomb.length - 1);
+                            setTakenEffect(bomb[index], game.setting.effect.fox);
+                            game.fox.bomb += bomb[index].dataset.type == 'bomb';
+                            bomb[index].remove();
+                        };
+
+                        if(allNuts.length != 0) {
+                            var randomValue = random(0, 10000);
+                            if(randomValue < game.fox.config.takeProbability.normal * 10000) {
+                                if(normal.length != 0 && game.fox.config.takeOther) {
+                                    takeNormal();
+                                }
+                            } else if(randomValue < game.fox.config.takeProbability.normal * 10000 + game.fox.config.takeProbability.gold * 10000) {
+                                if(gold.length != 0) {
+                                    takeGold();
+                                } else {
+                                    if(normal.length != 0 && game.fox.config.takeOther) {
+                                        takeNormal();
+                                    }
+                                }
+                            } else {
+                                if(bomb.length != 0) {
+                                    takeBomb();
+                                } else {
+                                    if(normal.length != 0 && game.fox.config.takeOther) {
+                                        takeNormal();
+                                    }
+                                }
+                            }
+
+                            document.getElementById('foxGameNut').innerText = !game.state.hidePoint ? getFoxPoint() : '???';
+                        }
                     }
                 }, game.fox.config.period)
 
                 // 木の実の設定
                 var nut = {
-                    /*画像の縦幅*/ width: 55,
-                    /*画像の横幅*/ height: 55
+                        /*画像の縦幅*/ width: 55,
+                        /*画像の横幅*/ height: 55
                 };
                 gameloop = setInterval(() => {
+                    var itemType;
+                    var randomValue = random(0, 10000);
+                    if(randomValue < game.setting.item.probability.normal * 10000) {
+                        itemType = 'normal';
+                    } else if(randomValue < game.setting.item.probability.normal * 10000 + game.setting.item.probability.gold * 10000) {
+                        itemType = 'gold';
+                    } else {
+                        itemType = 'bomb';
+                    }
                     var nutObj = document.createElement("div");
                     nutObj.setAttribute("id", num);
                     nutObj.setAttribute("name", "item");
                     nutObj.setAttribute("style", `
-                            width: 50px;
-                            height: 50px;
-                            position: absolute;
-                            background: brown;
-                            border-radius: 100px;
-                            border: white solid 2px;
-                            top: ${random(0, document.getElementById('space').offsetHeight - nut.height) + document.getElementById('foxUI').offsetHeight}px;
-                            left: ${random(0, document.getElementById('space').offsetWidth - nut.width)}px;
-                            cursor: pointer;
-                            opacity: 0;
-                    `);
+                                width: 50px;
+                                height: 50px;
+                                position: absolute;
+                                background: ${itemType == 'normal' ? 'brown' : itemType == 'gold' ? 'linear-gradient(45deg, #B67B03 0%, #DAAF08 45%, #FEE9A0 70%, #DAAF08 85%, #B67B03 90% 100%)' : '#333333'};
+                                ${itemType == 'gold' ? 'box-shadow: 0 0 5px 2px yellow;' : ''}
+                                border-radius: 100px;
+                                border: white solid 2px;
+                                top: ${random(0, document.getElementById('space').offsetHeight - nut.height) + document.getElementById('foxUI').offsetHeight}px;
+                                left: ${random(0, document.getElementById('space').offsetWidth - nut.width)}px;
+                                cursor: pointer;
+                                opacity: 0;
+                        `);
+                    nutObj.dataset.type = itemType;
                     nutObj.onclick = (e) => {
                         setTakenEffect(e.currentTarget, game.setting.effect.raccoon);
                         e.currentTarget.remove();
-                        game.raccoon.nut++;
-                        document.getElementById('raccoonGameNut').innerText = game.raccoon.nut;
+                        
+                        game.raccoon.nut  += e.currentTarget.dataset.type == 'normal';
+                        game.raccoon.gold += e.currentTarget.dataset.type == 'gold';
+                        game.raccoon.bomb += e.currentTarget.dataset.type == 'bomb';
+                        document.getElementById('raccoonGameNut').innerText = !game.state.hidePoint ? getRaccoonPoint() : '???';
                     };
                     document.getElementById('space').appendChild(nutObj);
                     num++;
@@ -548,6 +632,14 @@
                     location.reload();
                 };
 
+                // ゲームの 75%(3/4) まで到達したらポイントを隠す
+                setTimeout(() => {
+                    game.state.hidePoint = true;
+                    document.getElementById('raccoonGameNut').innerText = '???';
+                    document.getElementById('foxGameNut').innerText = '???';
+                }, game.setting.time / 4 * 3)
+
+                // 終了時
                 setTimeout(() => {
                     clearInterval(game.fox.interval);
                     clearInterval(gameloop);
@@ -561,6 +653,14 @@
                     }, 1000);
                 }, game.setting.time);
             }, 1000);
+        }
+
+        function getRaccoonPoint() {
+            return game.raccoon.nut * game.setting.item.point.normal + game.raccoon.gold * game.setting.item.point.gold + game.raccoon.bomb * game.setting.item.point.bomb;
+        }
+
+        function getFoxPoint() {
+            return game.fox.nut * game.setting.item.point.normal + game.fox.gold * game.setting.item.point.gold + game.fox.bomb * game.setting.item.point.bomb;
         }
 
         function showResult() {
@@ -585,15 +685,15 @@
                     document.getElementById('foxBomb').innerText = game.fox.bomb;
                 },
                 () => {
-                    document.getElementById('raccoonPoint').innerText = game.raccoon.nut + game.raccoon.gold * 5 - game.raccoon.bomb * 3;
-                    document.getElementById('foxPoint').innerText = game.fox.nut + game.fox.gold * 5 - game.fox.bomb * 3;
+                    document.getElementById('raccoonPoint').innerText = getRaccoonPoint();
+                    document.getElementById('foxPoint').innerText = getFoxPoint();
                 },
                 () => {
-                    var fox = game.fox.nut + game.fox.gold * 5 - game.fox.bomb * 3;
-                    var raccoon = game.raccoon.nut + game.raccoon.gold * 5 - game.raccoon.bomb * 3;
+                    var raccoon = getRaccoonPoint();
+                    var fox = getFoxPoint();
                     document.getElementById('winner').innerText = (raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "たぬきの勝ち" : "きつねの勝ち";
 
-                    shareText = `${document.getElementById('raccoonPoint').innerText} 対 ${document.getElementById('foxPoint').innerText} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
+                    shareText = `${raccoon} 対 ${fox} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
 
                     // Twitter
                     document.getElementById('tweetButton').href = `http://twitter.com/share?url=${location.href}&text=${shareText}`;
@@ -617,7 +717,7 @@
         function a() {
             game.setting.time = 1;
         }
-        // よくよく考えたらプレイヤーがたぬきって失礼だな
+            // よくよく考えたらプレイヤーがたぬきって失礼だな
     </script>
 </body>
 
