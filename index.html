@@ -581,6 +581,7 @@
                                 position: absolute;
                                 background: ${itemType == 'normal' ? 'brown' : itemType == 'gold' ? 'linear-gradient(45deg, #B67B03 0%, #DAAF08 45%, #FEE9A0 70%, #DAAF08 85%, #B67B03 90% 100%)' : '#333333'};
                                 ${itemType == 'gold' ? 'box-shadow: 0 0 5px 2px yellow;' : ''}
+                                ${itemType == 'bomb' ? 'transform: rotateZ(35deg);' : ''}
                                 border-radius: 100px;
                                 border: white solid 2px;
                                 top: ${random(0, document.getElementById('space').offsetHeight - nut.height) + document.getElementById('foxUI').offsetHeight}px;
@@ -588,6 +589,19 @@
                                 cursor: pointer;
                                 opacity: 0;
                         `);
+                    if(itemType == 'bomb') {
+                        var child = document.createElement('div');
+                        child.setAttribute('style',`
+                        width: 4px;
+                        height: 10px;
+                        background: linear-gradient(180deg, red,yellow);
+                        left: 23px;
+                        position: relative;
+                        top: -10px;
+                        border-bottom: solid gray 5px;
+                        `);
+                        nutObj.appendChild(child);
+                    }
                     nutObj.dataset.type = itemType;
                     nutObj.onclick = (e) => {
                         setTakenEffect(e.currentTarget, game.setting.effect.raccoon);
