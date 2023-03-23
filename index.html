@@ -505,14 +505,14 @@
                         var gold = [];
                         var bomb = [];
                         allNuts.forEach((itemElem) => {
-                            if(itemElem.dataset.type == 'normal') normal[normal.length] = itemElem;
-                            if(itemElem.dataset.type == 'gold')   gold[gold.length]     = itemElem;
-                            if(itemElem.dataset.type == 'bomb')   bomb[bomb.length]     = itemElem;
+                            if (itemElem.dataset.type == 'normal') normal[normal.length] = itemElem;
+                            if (itemElem.dataset.type == 'gold') gold[gold.length] = itemElem;
+                            if (itemElem.dataset.type == 'bomb') bomb[bomb.length] = itemElem;
                         });
                         var takeNormal = () => {
                             var index = random(0, normal.length - 1);
                             setTakenEffect(normal[index], game.setting.effect.fox);
-                            game.fox.nut  += normal[index].dataset.type == 'normal';
+                            game.fox.nut += normal[index].dataset.type == 'normal';
                             normal[index].remove();
                         };
                         var takeGold = () => {
@@ -528,25 +528,25 @@
                             bomb[index].remove();
                         };
 
-                        if(allNuts.length != 0) {
+                        if (allNuts.length != 0) {
                             var randomValue = random(0, 10000);
-                            if(randomValue < game.fox.config.takeProbability.normal * 10000) {
-                                if(normal.length != 0 && game.fox.config.takeOther) {
+                            if (randomValue < game.fox.config.takeProbability.normal * 10000) {
+                                if (normal.length != 0 && game.fox.config.takeOther) {
                                     takeNormal();
                                 }
-                            } else if(randomValue < game.fox.config.takeProbability.normal * 10000 + game.fox.config.takeProbability.gold * 10000) {
-                                if(gold.length != 0) {
+                            } else if (randomValue < game.fox.config.takeProbability.normal * 10000 + game.fox.config.takeProbability.gold * 10000) {
+                                if (gold.length != 0) {
                                     takeGold();
                                 } else {
-                                    if(normal.length != 0 && game.fox.config.takeOther) {
+                                    if (normal.length != 0 && game.fox.config.takeOther) {
                                         takeNormal();
                                     }
                                 }
                             } else {
-                                if(bomb.length != 0) {
+                                if (bomb.length != 0) {
                                     takeBomb();
                                 } else {
-                                    if(normal.length != 0 && game.fox.config.takeOther) {
+                                    if (normal.length != 0 && game.fox.config.takeOther) {
                                         takeNormal();
                                     }
                                 }
@@ -565,9 +565,9 @@
                 gameloop = setInterval(() => {
                     var itemType;
                     var randomValue = random(0, 10000);
-                    if(randomValue < game.setting.item.probability.normal * 10000) {
+                    if (randomValue < game.setting.item.probability.normal * 10000) {
                         itemType = 'normal';
-                    } else if(randomValue < game.setting.item.probability.normal * 10000 + game.setting.item.probability.gold * 10000) {
+                    } else if (randomValue < game.setting.item.probability.normal * 10000 + game.setting.item.probability.gold * 10000) {
                         itemType = 'gold';
                     } else {
                         itemType = 'bomb';
@@ -589,9 +589,9 @@
                                 cursor: pointer;
                                 opacity: 0;
                         `);
-                    if(itemType == 'bomb') {
+                    if (itemType == 'bomb') {
                         var child = document.createElement('div');
-                        child.setAttribute('style',`
+                        child.setAttribute('style', `
                         width: 4px;
                         height: 10px;
                         background: linear-gradient(180deg, red,yellow);
@@ -606,8 +606,8 @@
                     nutObj.onclick = (e) => {
                         setTakenEffect(e.currentTarget, game.setting.effect.raccoon);
                         e.currentTarget.remove();
-                        
-                        game.raccoon.nut  += e.currentTarget.dataset.type == 'normal';
+
+                        game.raccoon.nut += e.currentTarget.dataset.type == 'normal';
                         game.raccoon.gold += e.currentTarget.dataset.type == 'gold';
                         game.raccoon.bomb += e.currentTarget.dataset.type == 'bomb';
                         document.getElementById('raccoonGameNut').innerText = !game.state.hidePoint ? getRaccoonPoint() : '???';
@@ -732,6 +732,15 @@
             game.setting.time = 1;
         }
             // よくよく考えたらプレイヤーがたぬきって失礼だな
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EXNY55NZQ6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-EXNY55NZQ6');
     </script>
 </body>
 
