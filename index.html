@@ -899,7 +899,11 @@
                     var fox = getFoxPoint();
                     document.getElementById('winner').innerText = (raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "たぬきの勝ち" : "きつねの勝ち";
 
-                    shareText = `${raccoon} 対 ${fox} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
+                    if(mode == 'ひとりで') {
+                        shareText = `【${mode}モード】 ${raccoon}点とりました!`;
+                    } else {
+                        shareText = `【${mode}モード】 ${raccoon} 対 ${fox} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
+                    }
 
                     // Twitter
                     document.getElementById('tweetButton').href = `https://twitter.com/share?url=${location.href}&text=${shareText}`;
