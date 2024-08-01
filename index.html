@@ -255,6 +255,46 @@
         span.start-dialog-guide-title {
             font-size: 20px;
         }
+
+        .button {
+            width: max-content;
+            height: max-content;
+            padding: 10px 50px;
+            margin: 10px auto;
+            border-radius: 100px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            border: none;
+        }
+
+        .easy-color {
+            background: #008ab4;
+        }
+
+        .normal-color {
+            background: #08b324;
+        }
+
+        .hard-color {
+            background: #9cb802;
+        }
+
+        .very-hard-color {
+            background: #ee0000;
+        }
+
+        .ultra-hard-color {
+            background: #880367;
+        }
+
+        .solo-color {
+            background: #363636;
+        }
+
+        .gold-color {
+            background: linear-gradient(45deg, #B67B03 0%, #DAAF08 45%, #ccbc84 70%, #DAAF08 85%, #B67B03 90% 100%);
+        }
     </style>
 </head>
 
@@ -337,6 +377,21 @@
         " class="signal-root">
         <div id="signalText" class="center signal-text">Error?</div>
     </div>
+    <div class="root-dialog" id="modeDialog">
+        <div class="center dialog">
+            <span class="dialog-title">通常モード</span>
+            <button class="button easy-color" id="easyButton">かんたん</button>
+            <button class="button normal-color" id="normalButton">ふつう</button>
+            <button class="button hard-color" id="hardButton">むずかしい</button>
+            <button class="button very-hard-color" id="veryHardButton">激むず</button>
+            <button class="button ultra-hard-color" id="ultraHardButton">鬼むず</button>
+            <span class="dialog-title">特殊モード</span>
+            <button class="button solo-color" id="soloButton">ひとりで</button>
+            <button class="button gold-color" id="goldButton">ゴールドラッシュ</button>
+        </div>
+    </div>
+        
+    </div>
     <div class="start-dialog" id="startDialog">
         <div class="start-dialog-text-container">
             <div class="center start-dialog-text">タップしてスタート
@@ -357,9 +412,10 @@
     </div>
     <script>
         var num;
+        var mode = '???';
         document.getElementById('startDialog').onclick = () => {
+            document.getElementById('modeDialog').style.visibility = 'visible';
             document.getElementById('startDialog').style.visibility = 'hidden';
-            init();
         };
 
         var game = {
@@ -389,6 +445,7 @@
             },
             setting: {
                 time: 30 * 1000,     // ゲーム時間
+                loopTime: 400,
                 item: {
                     point: {
                         normal: 1,
@@ -412,6 +469,134 @@
                 }
             }
         };
+
+        document.getElementById('easyButton').onclick = () => {
+            mode = 'かんたん';
+            game.fox.config.period = 800;
+            game.fox.config.probability = 0.7;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.35;
+            game.fox.config.takeProbability.gold = 0.5;
+            game.fox.config.takeProbability.bomb = 0.15;
+            game.setting.item.probability.normal = 0.75;
+            game.setting.item.probability.gold = 0.1;
+            game.setting.item.probability.bomb = 0.15;
+            game.setting.loopTime = 400;
+
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+
+            init();
+        };
+        
+        document.getElementById('normalButton').onclick = () => {
+            mode = 'ふつう';
+            game.fox.config.period = 775;
+            game.fox.config.probability = 0.8;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.25;
+            game.fox.config.takeProbability.gold = 0.65;
+            game.fox.config.takeProbability.bomb = 0.1;
+            game.setting.item.probability.normal = 0.75;
+            game.setting.item.probability.gold = 0.1;
+            game.setting.item.probability.bomb = 0.15;
+            game.setting.loopTime = 400;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+        
+        document.getElementById('hardButton').onclick = () => {
+            mode = 'むずかしい';
+            game.fox.config.period = 680;
+            game.fox.config.probability = 0.9;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.25;
+            game.fox.config.takeProbability.gold = 0.65;
+            game.fox.config.takeProbability.bomb = 0.1;
+            game.setting.item.probability.normal = 0.7;
+            game.setting.item.probability.gold = 0.15;
+            game.setting.item.probability.bomb = 0.15;
+            game.setting.loopTime = 350;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+        
+        document.getElementById('veryHardButton').onclick = () => {
+            mode = '激むず';
+            game.fox.config.period = 540;
+            game.fox.config.probability = 0.9;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.25;
+            game.fox.config.takeProbability.gold = 0.6;
+            game.fox.config.takeProbability.bomb = 0.15;
+            game.setting.item.probability.normal = 0.6;
+            game.setting.item.probability.gold = 0.15;
+            game.setting.item.probability.bomb = 0.25;
+            game.setting.loopTime = 275;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+        
+        document.getElementById('ultraHardButton').onclick = () => {
+            mode = '鬼むず';
+            game.fox.config.period = 350;
+            game.fox.config.probability = 0.95;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.325;
+            game.fox.config.takeProbability.gold = 0.525;
+            game.fox.config.takeProbability.bomb = 0.15;
+            game.setting.item.probability.normal = 0.5;
+            game.setting.item.probability.gold = 0.2;
+            game.setting.item.probability.bomb = 0.4;
+            game.setting.loopTime = 150;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+        
+        document.getElementById('soloButton').onclick = () => {
+            mode = 'ひとりで';
+            game.fox.config.period = game.setting.time * 10;
+            game.fox.config.probability = 0.8;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0.25;
+            game.fox.config.takeProbability.gold = 0.65;
+            game.fox.config.takeProbability.bomb = 0.1;
+            game.setting.item.probability.normal = 0.6;
+            game.setting.item.probability.gold = 0.1;
+            game.setting.item.probability.bomb = 0.3;
+            game.setting.loopTime = 300;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+        
+        document.getElementById('goldButton').onclick = () => {
+            mode = 'ゴールドラッシュ';
+            game.fox.config.period = 775;
+            game.fox.config.probability = 0.825;
+            game.fox.config.takeOther = true;
+            game.fox.config.takeProbability.normal = 0;
+            game.fox.config.takeProbability.gold = 1;
+            game.fox.config.takeProbability.bomb = 0;
+            game.setting.item.probability.normal = 0
+            game.setting.item.probability.gold = 1;
+            game.setting.item.probability.bomb = 0;
+            game.setting.loopTime = 400;
+            
+            document.getElementById('modeDialog').style.visibility = 'hidden';
+            
+            init();
+        };
+
+        
 
         var nameLib = {
             add: (elem, text) => {
@@ -621,7 +806,7 @@
                     };
                     document.getElementById('space').appendChild(nutObj);
                     num++;
-                }, 400);
+                }, game.setting.loopTime);
 
                 var fadeinController = setInterval(() => {
                     var items = document.getElementsByName('item');
@@ -717,11 +902,11 @@
                     shareText = `${raccoon} 対 ${fox} で${(raccoon == fox) ? "同点でした。。。" : (raccoon >= fox) ? "勝ちました!!" : "負けました。。。"}`;
 
                     // Twitter
-                    document.getElementById('tweetButton').href = `http://twitter.com/share?url=${location.href}&text=${shareText}`;
+                    document.getElementById('tweetButton').href = `https://twitter.com/share?url=${location.href}&text=${shareText}`;
                     document.getElementById('tweetButton').style.visibility = 'visible';
 
                     // LINE
-                    document.getElementById('lineButton').href = `http://line.me/R/msg/text/?${encodeURIComponent(shareText)}\r\n${location.href}`;
+                    document.getElementById('lineButton').href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}\r\n${location.href}`;
                     document.getElementById('lineButton').style.visibility = 'visible';
 
                     // 共有メッセージのイベント定義
