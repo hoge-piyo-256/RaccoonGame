@@ -1143,13 +1143,13 @@
                 var sortedData = rankData.sort((a,b) => {
                     var sortBy = document.getElementById('rankingSort').value;
                     if(sortBy == 'difference') {
-                        return ((b.raccoon.nut + b.raccoon.gold * 5 - b.raccoon.bomb * 3) - (b.fox.nut + b.fox.gold * 5 - b.fox.bomb * 3)) - (a.raccoon.nut + a.raccoon.gold * 5 - a.raccoon.bomb * 3) - (a.fox.nut + a.fox.gold * 5 - a.fox.bomb * 3);
+                        return ((b.raccoon.nut + b.raccoon.gold * 5 - b.raccoon.bomb * 3) - (b.fox.nut + b.fox.gold * 5 - b.fox.bomb * 3)) - ((a.raccoon.nut + a.raccoon.gold * 5 - a.raccoon.bomb * 3) - (a.fox.nut + a.fox.gold * 5 - a.fox.bomb * 3));
                     } else if(sortBy == 'raccoonPoint') {
                         return (b.raccoon.nut + b.raccoon.gold * 5 - b.raccoon.bomb * 3) - (a.raccoon.nut + a.raccoon.gold * 5 - a.raccoon.bomb * 3);
                     } else if(sortBy == 'foxPoint') {
                         return (b.fox.nut + b.fox.gold * 5 - b.fox.bomb * 3) - (a.fox.nut + a.fox.gold * 5 - a.fox.bomb * 3);
                     } else if(sortBy == 'date') {
-                        return (Number(b.split('/')[0]) * 10000 + Number(b.split('/')[1]) * 100 + Number(b.split('/')[2])) - (Number(a.split('/')[0]) * 10000 + Number(a.split('/')[1]) * 100 + Number(a.split('/')[2]))
+                        return (Number(b.date.split('/')[0]) * 10000 + Number(b.date.split('/')[1]) * 100 + Number(b.date.split('/')[2])) - (Number(a.date.split('/')[0]) * 10000 + Number(a.date.split('/')[1]) * 100 + Number(a.date.split('/')[2]))
                     }
                 });
 
