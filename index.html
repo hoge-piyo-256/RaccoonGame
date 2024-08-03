@@ -269,6 +269,7 @@
             border: none;
             font-family: 'Hachi Maru Pop', cursive;
             font-size: 20px;
+            cursor: pointer;
         }
 
         .easy-color {
@@ -297,6 +298,65 @@
 
         .gold-color {
             background: linear-gradient(45deg, #B67B03 0%, #DAAF08 45%, #ccbc84 70%, #DAAF08 85%, #B67B03 90% 100%);
+        }
+
+        .deep-green-color {
+            background: #006000;
+        }
+
+        .dialog-padding {
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 0 5px;
+        }
+
+        select {
+            background: #006000;
+            color: white;
+            padding: 3px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 20px;
+        }
+
+        .flex-box {
+            display: flex;
+        }
+
+        .text-center {
+            height: max-content;
+            margin: auto 0;
+        }
+
+        .close-button {
+            margin-left: auto;
+            background-color: #c70000;
+            color: white;
+            border: white solid 2px;
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 15px;
+            height: max-content;
+            width: max-content;
+            padding: 10px;
+            margin: auto 0 auto auto;
+            cursor: pointer;
+        }
+
+        .scroll {
+            overflow-y: scroll;
+            scrollbar-width: none;
         }
     </style>
 </head>
@@ -372,6 +432,7 @@
                 <a href="javascript:alert('正常に処理できませんでした。');" target="_blank" id="lineButton" class="sns line" style="visibility: hidden;">LINE で共有</a>
             </div>
             <div id="snsThanks" class="sns-thanks"></div>
+            <button class="button deep-green-color" id="showRanking">ランキングをみる</button>
             <div class="dialog-retry-button" id="retryButton">もういっかい</div>
         </div>
     </div>
@@ -381,7 +442,7 @@
         <div id="signalText" class="center signal-text">Error?</div>
     </div>
     <div class="root-dialog" id="modeDialog">
-        <div class="center dialog">
+        <div class="center dialog scroll">
             <span class="dialog-title">通常モード</span>
             <button class="button easy-color" id="easyButton">かんたん</button>
             <button class="button normal-color" id="normalButton">ふつう</button>
@@ -391,9 +452,63 @@
             <span class="dialog-title">特殊モード</span>
             <button class="button solo-color" id="soloButton">ひとりで</button>
             <button class="button gold-color" id="goldButton">ゴールドラッシュ</button>
+            <span class="dialog-title">ランキング</span>
+            <button class="button deep-green-color" id="menuRanking">ランキングをみる</button>
         </div>
     </div>
-        
+    <div class="root-dialog" id="rankingDialog">
+        <div class="center dialog dialog-padding">
+            <div class="flex-box">
+                <div>
+                    <div class="flex-box">
+                        <div class="text-center">モード:</div>
+                        <select id="rankingMode">
+                            <option value="かんたん">かんたん</option>
+                            <option value="ふつう" selected>ふつう</option>
+                            <option value="むずかしい">むずかしい</option>
+                            <option value="激むず">激むず</option>
+                            <option value="鬼むず">鬼むず</option>
+                            <option value="ひとりで">ひとりで</option>
+                            <option value="ゴールドラッシュ">ゴールドラッシュ</option>
+                        </select>
+                    </div>
+                    <div class="flex-box">
+                        <div class="text-center">並び替え:</div>
+                        <select id="rankingSort">
+                            <option value="difference" selected>差分</option>
+                            <option value="raccoonPoint">得点</option>
+                            <option value="foxPoint">相手の点数</option>
+                            <option value="date">日付</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="close-button" id="rankingClose">閉じる</button>
+            </div>
+            <div id="myRank"></div>
+            <div class="scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>順位</th>
+                            <th>差分</th>
+                            <th>得点</th>
+                            <th>相手の得点</th>
+                            <th>日付</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody">
+                        <tr>
+                            <td>#?</td>
+                            <td>nodata</td>
+                            <td>nodata</td>
+                            <td>nodata</td>
+                            <td>Error</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     </div>
     <div class="start-dialog" id="startDialog">
         <div class="start-dialog-text-container">
@@ -420,6 +535,34 @@
             document.getElementById('modeDialog').style.visibility = 'visible';
             document.getElementById('startDialog').style.visibility = 'hidden';
         };
+
+        var rankData = null;
+        var rankError = {
+            error: false,
+            status: '000',
+            statusText: 'No Infomation'
+        };
+        (async () => {
+            var response  = await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec');
+            if(response.ok) {
+                rankData = await response.json();
+                rankData.forEach((obj) => {
+                    Object.assign(obj, {mine: false});
+                })
+                createRanking();
+            } else {
+                rankError.error = true;
+                rankError.status = response.status;
+                rankError.statusText = response.statusText;
+            }
+        })();
+
+        var rn = 0;
+        var rg = 0;
+        var rb = 0;
+        var fn = 0;
+        var fg = 0;
+        var fb = 0;
 
         var game = {
             raccoon: {
@@ -599,7 +742,23 @@
             init();
         };
 
-        
+        document.getElementById('menuRanking').onclick = () => {
+            createRanking();
+            document.getElementById('rankingDialog').style.visibility = 'visible';
+        }
+
+        document.getElementById('rankingClose').onclick = () => {
+            document.getElementById('rankingDialog').style.visibility = 'hidden';
+        }
+
+        document.getElementById('showRanking').onclick = () => {
+            createRanking();
+            document.getElementById('rankingDialog').style.visibility = 'visible';
+        }
+
+        document.getElementById('rankingSort').onchange = createRanking;
+        document.getElementById('rankingMode').onchange = createRanking;
+
 
         var nameLib = {
             add: (elem, text) => {
@@ -709,18 +868,21 @@
                             setTakenEffect(normal[index], game.setting.effect.fox);
                             game.fox.nut += normal[index].dataset.type == 'normal';
                             normal[index].remove();
+                            fn++;
                         };
                         var takeGold = () => {
                             var index = random(0, gold.length - 1);
                             setTakenEffect(gold[index], game.setting.effect.fox);
                             game.fox.gold += gold[index].dataset.type == 'gold';
                             gold[index].remove();
+                            fg++;
                         };
                         var takeBomb = () => {
                             var index = random(0, bomb.length - 1);
                             setTakenEffect(bomb[index], game.setting.effect.fox);
                             game.fox.bomb += bomb[index].dataset.type == 'bomb';
                             bomb[index].remove();
+                            fb++;
                         };
 
                         if (allNuts.length != 0) {
@@ -806,6 +968,10 @@
                         game.raccoon.gold += e.currentTarget.dataset.type == 'gold';
                         game.raccoon.bomb += e.currentTarget.dataset.type == 'bomb';
                         document.getElementById('raccoonGameNut').innerText = !game.state.hidePoint ? getRaccoonPoint() : '???';
+
+                        if(e.currentTarget.dataset.type == 'normal') rn++;
+                        if(e.currentTarget.dataset.type == 'gold') rg++;
+                        if(e.currentTarget.dataset.type == 'bomb') rb++;
                     };
                     document.getElementById('space').appendChild(nutObj);
                     num++;
@@ -850,12 +1016,54 @@
 
                 // 終了時
                 setTimeout(() => {
+
                     clearInterval(game.fox.interval);
                     clearInterval(gameloop);
                     clearInterval(fadeinController);
                     clearInterval(fadeoutController);
                     document.getElementById('signalText').innerText = '終了!!';
                     document.getElementById('signal').style.visibility = 'visible';
+                    
+                    var data = JSON.stringify({
+                        mode: mode,
+                        raccoon: {
+                            nut: game.raccoon.nut,
+                            gold: game.raccoon.gold,
+                            bomb: game.raccoon.bomb
+                        },
+                        fox: {
+                            nut: game.fox.nut,
+                            gold: game.fox.gold,
+                            bomb: game.fox.bomb
+                        },
+                        random: (rn * rg + rb ** 2) ^ (fn * fg + fb ** 2)
+                    });
+                    var param = {
+                        method: 'POST',
+                        body: data
+                    };
+                    (async () => {
+                        console.log('POST MESSAGE: ' + await (await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec', param)).text());
+                    })();
+                    document.getElementById('rankingMode').value = mode;
+
+                    var now = new Date();
+                    rankData.push({
+                        date: `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`,
+                        mode: mode,
+                        raccoon: {
+                            nut: game.raccoon.nut,
+                            gold: game.raccoon.nut,
+                            bomb: game.raccoon.bomb
+                        },
+                        fox: {
+                            nut: game.fox.nut,
+                            gold: game.fox.nut,
+                            bomb: game.fox.bomb
+                        },
+                        mine: true
+                    })
+
                     setTimeout(() => {
                         document.getElementById('signal').style.visibility = 'hidden';
                         showResult();
@@ -925,6 +1133,87 @@
                     });
                 }
             ], 750, 1000);
+        }
+        
+        function createRanking() {
+            [...document.getElementById('rankingBody').children].forEach((elem) => {elem.remove();});
+
+            if(!rankError.error && rankData != null) {
+                var sortedData = rankData.sort((a,b) => {
+                    var sortBy = document.getElementById('rankingSort').value;
+                    if(sortBy == 'difference') {
+                        return ((b.raccoon.nut + b.raccoon.gold * 5 - b.raccoon.bomb * 3) - (b.fox.nut + b.fox.gold * 5 - b.fox.bomb * 3)) - (a.raccoon.nut + a.raccoon.gold * 5 - a.raccoon.bomb * 3) - (a.fox.nut + a.fox.gold * 5 - a.fox.bomb * 3);
+                    } else if(sortBy == 'raccoonPoint') {
+                        return (b.raccoon.nut + b.raccoon.gold * 5 - b.raccoon.bomb * 3) - (a.raccoon.nut + a.raccoon.gold * 5 - a.raccoon.bomb * 3);
+                    } else if(sortBy == 'foxPoint') {
+                        return (b.fox.nut + b.fox.gold * 5 - b.fox.bomb * 3) - (a.fox.nut + a.fox.gold * 5 - a.fox.bomb * 3);
+                    } else if(sortBy == 'date') {
+                        return (Number(b.split('/')[0]) * 10000 + Number(b.split('/')[1]) * 100 + Number(b.split('/')[2])) - (Number(a.split('/')[0]) * 10000 + Number(a.split('/')[1]) * 100 + Number(a.split('/')[2]))
+                    }
+                });
+
+                var rank = 1;
+                sortedData.forEach((one, index) => {
+                    if(document.getElementById('rankingMode').value == one.mode) {
+                        var raccoonPoint = one.raccoon.nut + one.raccoon.gold * 5 - one.raccoon.bomb * 3;
+                        var foxPoint = one.fox.nut + one.fox.gold * 5 - one.fox.bomb * 3;
+
+                        var row = document.createElement('tr');
+                        if(one.mine) {
+                            row.style.color = '#ff6060';
+                            document.getElementById('myRank').innerText = `あなたの順位: #${rank}`;
+                        } else {
+                            document.getElementById('myRank').innerText = '';
+                        }
+
+                        var rankElem = document.createElement('td');
+                        rankElem.innerText = '#' + rank;
+                        row.appendChild(rankElem);
+
+                        var differenceElem = document.createElement('td');
+                        differenceElem.innerText = raccoonPoint - foxPoint;
+                        row.appendChild(differenceElem);
+
+                        var raccoonPointElem = document.createElement('td');
+                        raccoonPointElem.innerText = raccoonPoint;
+                        row.appendChild(raccoonPointElem);
+
+                        var foxPointElem = document.createElement('td');
+                        foxPointElem.innerText = foxPoint;
+                        row.appendChild(foxPointElem);
+
+                        var dateElem = document.createElement('td');
+                        dateElem.innerText = one.date;
+                        row.appendChild(dateElem);
+
+                        document.getElementById('rankingBody').appendChild(row);
+
+                        rank++;
+                    }
+                });
+            } else {
+                var row = document.createElement('tr');
+
+                var rankElem = document.createElement('td');
+                rankElem.innerText = 'エラー';
+                row.appendChild(rankElem);
+
+                var differenceElem = document.createElement('td');
+                differenceElem.innerText = rankError.status;
+                row.appendChild(differenceElem);
+
+                var raccoonPointElem = document.createElement('td');
+                raccoonPointElem.innerText = rankError.statusText;
+                row.appendChild(raccoonPointElem);
+
+                var foxPointElem = document.createElement('td');
+                row.appendChild(foxPointElem);
+
+                var dateElem = document.createElement('td');
+                row.appendChild(dateElem);
+
+                document.getElementById('rankingBody').appendChild(row);
+            }
         }
 
         function a() {
