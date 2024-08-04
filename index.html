@@ -537,24 +537,30 @@
             document.getElementById('startDialog').style.visibility = 'hidden';
         };
 
-        var rankData = null;
+        var rankData = [];
         var rankError = {
             error: false,
             status: '000',
             statusText: 'No Infomation'
         };
         (async () => {
-            var response  = await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec');
-            if(response.ok) {
-                rankData = await response.json();
-                rankData.forEach((obj) => {
-                    Object.assign(obj, {mine: false});
-                })
-                createRanking();
-            } else {
+            try {
+                var response  = await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec');
+                if(response.ok) {
+                    rankData = await response.json();
+                    rankData.forEach((obj) => {
+                        Object.assign(obj, {mine: false});
+                    })
+                    createRanking();
+                } else {
+                    rankError.error = true;
+                    rankError.status = response.status;
+                    rankError.statusText = response.statusText;
+                }
+            } catch {
                 rankError.error = true;
-                rankError.status = response.status;
-                rankError.statusText = response.statusText;
+                rankError.status = '001';
+                rankError.statusText = 'Fetch Exception';
             }
         })();
 
@@ -1044,7 +1050,11 @@
                         body: data
                     };
                     (async () => {
-                        console.log('POST MESSAGE: ' + await (await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec', param)).text());
+                        try {
+                            console.log('POST MESSAGE: ' + await (await fetch('https://script.google.com/macros/s/AKfycbzSeyZbjhhkWL96pIfPpJ3ytqxsd2KkJ7Gnqy--9F3SAaKKHlPlayxbue30sIP0ZLCRPw/exec', param)).text());
+                        } catch {
+                            console.log('POST FAILED: FETCH EXCEPTION');
+                        }
                     })();
                     document.getElementById('rankingMode').value = mode;
 
