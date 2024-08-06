@@ -1060,7 +1060,7 @@
 
                     var now = new Date();
                     rankData.push({
-                        date: `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`,
+                        date: `${now.getFullYear()}/${('0' + (now.getMonth() + 1)).slice(-2)}/${('0' + now.getDate()).slice(-2)}`,
                         mode: mode,
                         raccoon: {
                             nut: game.raccoon.nut,
